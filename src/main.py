@@ -21,6 +21,7 @@ class UI:
             settings = u.tab("Settings")
         with u.tab_panels(tabs,value=settings).classes('w-left'):
             with u.tab_panel(pc_manager):
+                # Tab za pracenje upotrebe CPU RAMA i diska
                 u.label("CPU RAM Disk info")
                 
                 ram_info = self.manager.show_ram_info()
@@ -28,7 +29,7 @@ class UI:
                 u.label(f"Upotreba RAM memorije: {ram_info['used']} GB / {ram_info['total']} GB")
 
 
-
+            # Tab za generalne postavke
             with u.tab_panel(settings):
                 u.label("General settings")
 
@@ -41,7 +42,7 @@ class Manager:
         giga = byte/one_gb
         giga='{0:.1f}'.format(giga)
         return giga
-    # Funkcija koja prikazuje info o upotrebi RAM memorije i sl.
+    # Funkcija koja prikazuje info o upotrebi RAM memorije
     def show_ram_info(self):
         ram_usage = virtual_memory()
         ram_usage = dict(ram_usage._asdict())
@@ -50,10 +51,13 @@ class Manager:
                 ram_usage[key]=self.bytes_to_gb(ram_usage[key])
 
         return ram_usage
+    # Funkcija koja prikazuje info o upotrebi procesora
+    def show_cpu_info(self):
+        pass
 
-
-
-
+    # Funkcija koja prikazuje info o upotrebi procesora
+    def show_disk_info(self):
+        pass
 
 
 
