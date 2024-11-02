@@ -15,6 +15,14 @@ Da biste klonirali repozitorij, koristite sljedeću komandu:
     
 ```bash
  git clone https://github.com/Emcho0/python_nicegui
+
 ```
 
 ## Upotreba projekta 
+
+Uđite u direktorij gdje se nalazi projekat i sinhronizujte ga
+
+```bash
+cd python_nicegui
+uv sync
+```
