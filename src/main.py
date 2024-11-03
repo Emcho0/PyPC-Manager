@@ -19,11 +19,12 @@ class UI:
         with u.tabs().classes('w-left') as tabs:
             pc_manager = u.tab("PC Manager")
             settings = u.tab("Settings")
-        with u.tab_panels(tabs,value=settings).classes('w-left'):
+            os_info = u.tab("OS Info")
+        with u.tab_panels(tabs,value=os_info).classes('w-left'):
             with u.tab_panel(pc_manager):
                 # Tab za pracenje upotrebe CPU RAMA i diska
                 u.label("CPU RAM Disk info")
-                
+
                 ram_info = self.manager.show_ram_info()
 
                 u.label(f"Upotreba RAM memorije: {ram_info['used']} GB / {ram_info['total']} GB")
@@ -32,6 +33,9 @@ class UI:
             # Tab za generalne postavke
             with u.tab_panel(settings):
                 u.label("General settings")
+
+            with u.tab_panel(os_info):
+                os_info = self.manager.os_info()
 
 class Manager:
     def __init__(self):
@@ -58,6 +62,20 @@ class Manager:
     # Funkcija koja prikazuje info o upotrebi procesora
     def show_disk_info(self):
         pass
+
+    # Funkcija koja prikazuje info o operativnom sistemu
+    def os_info(self):
+        system_info = platform.uname()
+
+        u.label("System Information:")
+        u.html(f"""
+            System: {system_info.system} <br>
+            Node name: {system_info.node} <br>
+            Release: {system_info.release} <br>
+            Version: {system_info.version} <br>
+            Machine: {system_info.machine} <br>
+            Architecture: {system_info.processor}
+            """)
 
 
 
