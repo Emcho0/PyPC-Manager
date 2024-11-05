@@ -1,6 +1,8 @@
-from nicegui import ui as u
-from psutil import disk_partitions, disk_usage, virtual_memory, cpu_percent
 import platform
+import subprocess
+
+from nicegui import ui as u
+from psutil import virtual_memory
 
 
 class UI:
@@ -19,14 +21,17 @@ class UI:
             pc_manager = u.tab("PC Manager")
             settings = u.tab("Settings")
             os_info = u.tab("OS Info")
-        with u.tab_panels(tabs, value=os_info).classes("w-left"):
+        with u.tab_panels(tabs, value=pc_manager).classes("w-left"):
             with u.tab_panel(pc_manager):
                 # Tab za pracenje upotrebe CPU RAMA i diska
-                u.label("CPU RAM Disk info")
 
                 ram_info = self.manager.show_ram_info()
 
-                u.label(f"Upotreba RAM memorije: {ram_info['used']} GB / {ram_info['total']} GB")
+                u.label(
+                    f"Upotreba RAM memorije: {ram_info['used']} GB / {ram_info['total']} GB"
+                )
+
+                cpu_info = self.manager.show_cpu_info()
 
             # Tab za generalne postavke
             with u.tab_panel(settings):
@@ -56,11 +61,46 @@ class Manager:
 
         return ram_usage
 
-    # Funkcija koja prikazuje info o upotrebi procesora
+    # Funkcija koja prikazuje info o upotrebi procesora kao i osnovni info o procesoru
     def show_cpu_info(self):
-        pass
+        u.label("CPU Info")
+        os_name = platform.system()
+        cpu_name = self.get_cpu_name()
 
-    # Funkcija koja prikazuje info o upotrebi procesora
+        u.html(f"""
+            Detected OS: {os_name} <br>
+            CPU Name: {cpu_name} """)
+
+    def get_cpu_name(self):
+        system = platform.system()
+
+        if system == "Windows":
+            try:
+                # Using wmic to get the CPU name (model name)
+                result = subprocess.run(
+                    ["wmic", "cpu", "get", "caption"], capture_output=True, text=True
+                )
+                cpu_name = result.stdout.splitlines()[
+                    1
+                ].strip()  # Get the CPU name from the output
+                return cpu_name
+            except Exception as e:
+                return f"Error retrieving CPU info on Windows: {e}"
+
+        elif system == "Linux":
+            try:
+                # Read from /proc/cpuinfo to get the CPU model name
+                with open("/proc/cpuinfo", "r") as f:
+                    for line in f:
+                        if line.startswith("model name"):
+                            return line.split(":")[1].strip()  # Return the model name
+                return "CPU model name not found in /proc/cpuinfo"
+            except Exception as e:
+                return f"Error retrieving CPU info on Linux: {e}"
+
+        return "Unsupported OS"
+
+    # Funkcija koja prikazuje info o upotrebi diska
     def show_disk_info(self):
         pass
 
