@@ -21,7 +21,7 @@ class UI:
             pc_manager = u.tab("PC Manager")
             settings = u.tab("Settings")
             os_info = u.tab("OS Info")
-        with u.tab_panels(tabs, value=pc_manager).classes("w-left"):
+        with u.tab_panels(tabs, value=pc_manager).classes("h-left"):
             with u.tab_panel(pc_manager):
                 # Tab za pracenje upotrebe CPU RAMA i diska
 
@@ -76,24 +76,20 @@ class Manager:
 
         if system == "Windows":
             try:
-                # Using wmic to get the CPU name (model name)
                 result = subprocess.run(
                     ["wmic", "cpu", "get", "caption"], capture_output=True, text=True
                 )
-                cpu_name = result.stdout.splitlines()[
-                    1
-                ].strip()  # Get the CPU name from the output
+                cpu_name = result.stdout.splitlines()[1].strip()
                 return cpu_name
             except Exception as e:
                 return f"Error retrieving CPU info on Windows: {e}"
 
         elif system == "Linux":
             try:
-                # Read from /proc/cpuinfo to get the CPU model name
                 with open("/proc/cpuinfo", "r") as f:
                     for line in f:
                         if line.startswith("model name"):
-                            return line.split(":")[1].strip()  # Return the model name
+                            return line.split(":")[1].strip()
                 return "CPU model name not found in /proc/cpuinfo"
             except Exception as e:
                 return f"Error retrieving CPU info on Linux: {e}"
@@ -105,16 +101,54 @@ class Manager:
         pass
 
     # Funkcija koja prikazuje info o operativnom sistemu
+    import platform
+
+    # Funkcija koja prikazuje info o operativnom sistemu
     def os_info(self):
         system_info = platform.uname()
+        os = platform.system()
+        release = platform.release()
 
-        u.label("System Information:")
-        u.html(f"""
-            System: {system_info.system} <br>
-            Node name: {system_info.node} <br>
-            Release: {system_info.release} <br>
-            Version: {system_info.version} <br>
-            Machine: {system_info.machine} <br>
+        if os == "Windows" and release.startswith("10"):
+            u.label("System Information:")
+            u.html(f"""
+                System: {system_info.system} <br>
+                Node name: {system_info.node} <br>
+                Release: {system_info.release} <br>
+                Version: {system_info.version} <br>
+                Machine: {system_info.machine} <br>
+            """)
+
+            # ASCII art for Windows 10
+            ascii_art = """
+            Insert ascii art here for win 10
+            """
+            u.html(f"<pre>{ascii_art}</pre>")
+
+        elif os == "Windows" and release.startswith("11"):
+            u.label("System Information:")
+            u.html(f"""
+                System: {system_info.system} <br>
+                Node name: {system_info.node} <br>
+                Release: {system_info.release} <br>
+                Version: {system_info.version} <br>
+                Machine: {system_info.machine} <br>
+            """)
+
+            # ASCII art for Windows 11
+            ascii_art = """
+            Insert ascii art here for win 11
+            """
+            u.html(f"<pre>{ascii_art}</pre>")
+
+        else:
+            u.label("Unsupported OS or Version")
+            u.html(f"""
+                System: {system_info.system} <br>
+                Node name: {system_info.node} <br>
+                Release: {system_info.release} <br>
+                Version: {system_info.version} <br>
+                Machine: {system_info.machine} <br>
             """)
 
 
