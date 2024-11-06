@@ -2,7 +2,8 @@ import platform
 import subprocess
 
 from nicegui import ui as u
-from psutil import virtual_memory
+from psutil import cpu_freq, virtual_memory
+import psutil
 
 
 class UI:
@@ -16,23 +17,17 @@ class UI:
         u.page_title("PyPC Manager")
 
         # Dodavanje tabova u lijevu stranu
-
         with u.tabs().classes("w-left") as tabs:
             pc_manager = u.tab("PC Manager")
             settings = u.tab("Settings")
             os_info = u.tab("OS Info")
         with u.tab_panels(tabs, value=pc_manager).classes("h-left"):
             with u.tab_panel(pc_manager):
-                # Tab za pracenje upotrebe CPU RAMA i diska
-
-                ram_info = self.manager.show_ram_info()
-
-                u.label(
-                    f"Upotreba RAM memorije: {ram_info['used']} GB / {ram_info['total']} GB"
-                )
+                # Tab za praćenje upotrebe CPU RAM-a i diska
 
                 cpu_info = self.manager.show_cpu_info()
-
+                ram_info = self.manager.show_ram_info()
+                u.label(f"RAM usage: {ram_info['used']} GB / {ram_info['total']} GB")
             # Tab za generalne postavke
             with u.tab_panel(settings):
                 u.label("General settings")
@@ -48,8 +43,7 @@ class Manager:
     def bytes_to_gb(self, byte):
         one_gb = 1073741824  # bajtovi
         giga = byte / one_gb
-        giga = "{0:.1f}".format(giga)
-        return giga
+        return "{0:.1f}".format(giga)
 
     # Funkcija koja prikazuje info o upotrebi RAM memorije
     def show_ram_info(self):
@@ -65,22 +59,46 @@ class Manager:
     def show_cpu_info(self):
         u.label("CPU Info")
         os_name = platform.system()
-        cpu_name = self.get_cpu_name()
 
+        cpu_name = self.get_cpu_name()
+        # Broj jezgara
+        cpu_count = psutil.cpu_count(logical=False)
+        # Broj niti
+        logical_cpu_count = psutil.cpu_count(logical=True)
+        cpu_f = psutil.cpu_freq()
         u.html(f"""
             Detected OS: {os_name} <br>
-            CPU Name: {cpu_name} """)
+            CPU Name: {cpu_name} <br>
+            Cores: {cpu_count} <br>
+            Threads: {logical_cpu_count} <br>
+            Frequency: {cpu_f}
+              """)
 
     def get_cpu_name(self):
         system = platform.system()
 
         if system == "Windows":
             try:
+                # Run PowerShell command to get CPU name
                 result = subprocess.run(
-                    ["wmic", "cpu", "get", "caption"], capture_output=True, text=True
+                    [
+                        "powershell",
+                        "-Command",
+                        "Get-CimInstance -ClassName Win32_Processor | Select-Object -ExpandProperty Name",
+                    ],
+                    capture_output=True,
+                    text=True,
                 )
-                cpu_name = result.stdout.splitlines()[1].strip()
+
+                # Get the output and strip any leading/trailing whitespace
+                cpu_name = result.stdout.strip()
+
+                # If output is empty, return a helpful message
+                if not cpu_name:
+                    return "No CPU info found (PowerShell command failed)."
+
                 return cpu_name
+
             except Exception as e:
                 return f"Error retrieving CPU info on Windows: {e}"
 
@@ -99,9 +117,6 @@ class Manager:
     # Funkcija koja prikazuje info o upotrebi diska
     def show_disk_info(self):
         pass
-
-    # Funkcija koja prikazuje info o operativnom sistemu
-    import platform
 
     # Funkcija koja prikazuje info o operativnom sistemu
     def os_info(self):
