@@ -1,6 +1,9 @@
 # PyPC Manager
 
-PyPC Manager je projekat usmjeren na praćenje osnovnih informacija o računarskom sistemu, uključujući upotrebu CPU-a, RAM-a i diska. Ovaj alat omogućava korisnicima da dobiju uvid u performanse svog sistema u stvarnom vremenu, što je ključno za optimizaciju resursa i identifikaciju potencijalnih problema. 
+PyPC Manager je projekat usmjeren na praćenje osnovnih informacija o računarskom sistemu, uključujući upotrebu CPU-a, RAM-a i diska.
+
+Ovaj alat omogućava korisnicima da dobiju uvid u performanse svog sistema u stvarnom vremenu, što je ključno za optimizaciju resursa i identifikaciju potencijalnih problema.
+Ovo je jako bitno naravno za PC ili Laptop.
 
 ## Predrekvizite
 
@@ -25,4 +28,12 @@ Uđite u direktorij gdje se nalazi projekat i sinhronizujte ga
 ```bash
 cd python_nicegui
 uv sync
+```
+
+## Pokretanje projekta 
+
+da biste pokrenuli projekat potrebno je upotrijebiti komandu 
+
+```bash
+uv run src/main.py 
 ```
