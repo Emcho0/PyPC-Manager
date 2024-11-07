@@ -1,9 +1,9 @@
+from nicegui import ui as u
 import platform
 import subprocess
-
-from nicegui import ui as u
 from psutil import cpu_freq, virtual_memory
 import psutil
+import time
 
 
 class UI:
@@ -12,25 +12,21 @@ class UI:
         self.tabs_general_ui()
 
     def tabs_general_ui(self):
-        # Stil WEB aplikacije
+        # Osnovni izgled aplikacije
         u.add_css("styles/style.css")
         u.page_title("PyPC Manager")
 
-        # Dodavanje tabova u lijevu stranu
         with u.tabs().classes("w-left") as tabs:
             pc_manager = u.tab("PC Manager")
-            settings = u.tab("Settings")
             os_info = u.tab("OS Info")
+
         with u.tab_panels(tabs, value=pc_manager).classes("h-left"):
             with u.tab_panel(pc_manager):
-                # Tab za praćenje upotrebe CPU RAM-a i diska
-
+                # Pokazi CPU i RAM informacije
+                u.button("Refresh disk list", icon="refresh")
                 cpu_info = self.manager.show_cpu_info()
                 ram_info = self.manager.show_ram_info()
                 u.label(f"RAM usage: {ram_info['used']} GB / {ram_info['total']} GB")
-            # Tab za generalne postavke
-            with u.tab_panel(settings):
-                u.label("General settings")
 
             with u.tab_panel(os_info):
                 os_info = self.manager.os_info()
@@ -41,11 +37,10 @@ class Manager:
         super().__init__()
 
     def bytes_to_gb(self, byte):
-        one_gb = 1073741824  # bajtovi
+        one_gb = 1073741824  # bytes
         giga = byte / one_gb
         return "{0:.1f}".format(giga)
 
-    # Funkcija koja prikazuje info o upotrebi RAM memorije
     def show_ram_info(self):
         ram_usage = virtual_memory()
         ram_usage = dict(ram_usage._asdict())
@@ -55,17 +50,14 @@ class Manager:
 
         return ram_usage
 
-    # Funkcija koja prikazuje info o upotrebi procesora kao i osnovni info o procesoru
     def show_cpu_info(self):
         u.label("CPU Info")
         os_name = platform.system()
 
         cpu_name = self.get_cpu_name()
-        # Broj jezgara
         cpu_count = psutil.cpu_count(logical=False)
-        # Broj niti
         logical_cpu_count = psutil.cpu_count(logical=True)
-        cpu_f = psutil.cpu_freq()
+        cpu_f = cpu_freq()
         u.html(f"""
             Detected OS: {os_name} <br>
             CPU Name: {cpu_name} <br>
@@ -79,7 +71,6 @@ class Manager:
 
         if system == "Windows":
             try:
-                # Run PowerShell command to get CPU name
                 result = subprocess.run(
                     [
                         "powershell",
@@ -89,11 +80,8 @@ class Manager:
                     capture_output=True,
                     text=True,
                 )
-
-                # Get the output and strip any leading/trailing whitespace
                 cpu_name = result.stdout.strip()
 
-                # If output is empty, return a helpful message
                 if not cpu_name:
                     return "No CPU info found (PowerShell command failed)."
 
@@ -114,11 +102,6 @@ class Manager:
 
         return "Unsupported OS"
 
-    # Funkcija koja prikazuje info o upotrebi diska
-    def show_disk_info(self):
-        pass
-
-    # Funkcija koja prikazuje info o operativnom sistemu
     def os_info(self):
         system_info = platform.uname()
         os = platform.system()
@@ -133,10 +116,8 @@ class Manager:
                 Version: {system_info.version} <br>
                 Machine: {system_info.machine} <br>
             """)
-
-            # ASCII art for Windows 10
-            ascii_art = """
-            Insert ascii art here for win 10
+            ascii_art = """ 
+                
             """
             u.html(f"<pre>{ascii_art}</pre>")
 
@@ -149,10 +130,16 @@ class Manager:
                 Version: {system_info.version} <br>
                 Machine: {system_info.machine} <br>
             """)
-
-            # ASCII art for Windows 11
             ascii_art = """
-            Insert ascii art here for win 11
+            ############    ############
+            ############    ############
+            ############    ############
+            ############    ############
+
+            ############    ############
+            ############    ############
+            ############    ############
+            ############    ############
             """
             u.html(f"<pre>{ascii_art}</pre>")
 
