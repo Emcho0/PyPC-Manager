@@ -37,3 +37,11 @@ da biste pokrenuli projekat potrebno je upotrijebiti komandu
 ```bash
 uv run src/main.py 
 ```
+
+## Pregled koda
+
+da biste usli i pregledali kod preko vs code potrebno je upotrijebiti komandu
+
+```bash
+code .
+```
