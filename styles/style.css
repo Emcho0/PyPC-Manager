@@ -1,7 +1,39 @@
-@import url('https://fonts.cdnfonts.com/css/jetbrains-mono');
+@import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+
 
 body {
-  font-family: 'JetBrains Mono', sans-serif;
-  background-color: darkcyan;
+  font-family: 'Jost', sans-serif;
+  background-color: #060914; /* Yoru0 */
   border-radius: 10%;
+  font-size: 1.5em;
+  color: #BDBFCB; /* Tsuki3 */
+}
+
+.tabs {
+  background-color: #0D2C4E; /* KuroiBlue */
+  border-radius: 10em;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  color: #C6DFEC; /* Tsuki4 */
+  display: inline-block;
+}
+
+.tab_panel {
+    padding: 20px;
+    background-color: #121210; /* KuroiBlack */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    color: #BDBFCB; /* Tsuki3 */
+    transition: opacity 0.3s ease;
+}
+
+
+.table {
+  background-color: #121210; /* KuroiBlack */
+  border-radius: 8px;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  color: #BDBFCB; /* Tsuki3 */
 }

@@ -1,9 +1,8 @@
 import platform
 import subprocess
-
 import psutil
-from nicegui import ui as u
 from psutil import cpu_freq, disk_partitions, disk_usage, virtual_memory
+from nicegui import ui as u
 
 
 class UI:
@@ -16,69 +15,72 @@ class UI:
         u.add_css("styles/style.css")
         u.page_title("PyPC Manager")
 
-        with u.tabs().classes("w-left") as tabs:
-            pc_manager = u.tab("PC Manager")
-            os_info = u.tab("OS Info")
+        with u.tabs().classes("w-left").classes("tabs") as tabs:
+            pc_manager = u.tab("PC Manager", icon="home")
+            os_info = u.tab("OS Info", icon="info")
 
         with u.tab_panels(tabs, value=pc_manager).classes("h-left"):
-            with u.tab_panel(pc_manager):
+            with u.tab_panel(pc_manager).classes("tab_panel"):
+                # Prikazivanje informacija o procesoru
                 self.manager.show_cpu_info()
 
+                # Prikazivanje informacija o RAM upotrebi
                 self.ram_label = u.label("RAM usage: Loading...").classes(
                     "text-positive"
                 )
 
-                # Tajmer za osvjezavanje ram memorije svake sekunde
+                # Timer za osvjezavanje memorije svake sekunde
                 u.timer(1.0, self.refresh_ram_info)
 
-                # Tajmer za osvjezavanje informacije o disku svake 2 sekunde
-                u.timer(2.0, self.update_disk_info)
-
-                # Display the disk info using the refreshable function
+                # Displaying disk information
                 self.disk_ui()
 
-            with u.tab_panel(os_info):
+            # Dodajemo .classes("tab_panel") za stil informacija unutar taba
+            with u.tab_panel(os_info).classes("tab_panel"):
                 self.manager.os_info()
+                self.show_os_info()
 
     def refresh_ram_info(self):
         ram_info = self.manager.show_ram_info()
         ram_used_percentage = ram_info["percent"]
 
         ram_text = f"RAM usage: {ram_info['used']} GB / {ram_info['total']} GB ({ram_used_percentage}%)"
-
         self.ram_label.text = ram_text
 
+        # Update label color based on RAM usage
         if ram_used_percentage > 80:
             self.ram_label.classes(
                 replace="text-negative"
-            )  # Za visoku upotrebu RAM memorije
-        else:
+            )  # Visoka upotreba RAM memorije
             self.ram_label.classes(
                 replace="text-positive"
-            )  # Za nisku upotrebu RAM memorije
+            )  # Niska upotreba RAM memorije
 
-    """ Dekorator u pythonu koji osvjezava informacije o novom disk
-    uredjaju ako je iskljucen"""
-
-    @u.refreshable
     def disk_ui(self):
-        # Fetch the updated disk information
         disk_info = self.manager.show_disk_info()
 
-        # Create a table for disk info dynamically
+        # Prikazi informacije o svakom disku unutar tabele (staticki)
         u.table(
             columns=[
-                {"name": "device", "label": "Uredjaj", "field": "device"},
-                {"name": "total", "label": "Ukupan prostor", "field": "total"},
-                {"name": "used", "label": "Upotrijebljen prostor", "field": "used"},
-                {"name": "free", "label": "Slobodan prostor", "field": "free"},
-                {"name": "percent", "label": "% Upotrijebljeno", "field": "percent"},
+                {"name": "device", "label": "Device", "field": "device"},
+                {"name": "total", "label": "Total Space", "field": "total"},
+                {"name": "used", "label": "Used Space", "field": "used"},
+                {"name": "free", "label": "Free Space", "field": "free"},
+                {"name": "percent", "label": "% Used", "field": "percent"},
             ],
             rows=disk_info,
-        ).classes("w-full")
+        ).classes("w-full").classes("table")
 
-    def update_disk_info(self):
-        self.disk_ui.refresh()
+    def show_os_info(self):
+        os = platform.system()
+        release = platform.release()
+
+        if os == "Windows" and release.startswith("10"):
+            u.label("Windows 10")
+        elif os == "Windows" and release.startswith("11"):
+            u.label("Windows 11")
+        else:
+            u.label("Unsupported OS")
 
 
 class Manager:
@@ -86,16 +88,15 @@ class Manager:
         super().__init__()
 
     def bytes_to_gb(self, byte):
-        one_gb = 1073741824  # bytes
+        one_gb = 1073741824
         giga = byte / one_gb
         return "{0:.1f}".format(giga)
 
-    # Prikazuje informacije o svakom disku kao tabelu
     def show_disk_info(self):
+        # Informacije su smjestene kao niz
         disk_info = []
         partitions = disk_partitions(all=False)
         for partition in partitions:
-            # Get disk usage for each partition
             usage = disk_usage(partition.mountpoint)
             disk_info.append(
                 {
@@ -108,7 +109,6 @@ class Manager:
             )
         return disk_info
 
-    # Prikazuje informacije o ram memoriji
     def show_ram_info(self):
         ram_usage = virtual_memory()
         ram_usage = dict(ram_usage._asdict())
@@ -120,10 +120,9 @@ class Manager:
         return ram_usage
 
     def show_cpu_info(self):
-        self.cpu_label = u.label("CPU Info: Loading...").classes(
-            "text-center"
-        )  # Initial label
-        u.timer(1.0, self.update_cpu_info)
+        # Prikazi info o procesoru
+        self.cpu_label = u.label("CPU Info: Loading...").classes("text-left")
+        self.update_cpu_info()
 
     def update_cpu_info(self):
         cpu_f = cpu_freq()
@@ -140,6 +139,7 @@ class Manager:
 
         if system == "Windows":
             try:
+                # Powershell komanda koja prikazuje tacne informacije o nazivu procesora
                 result = subprocess.run(
                     [
                         "powershell",
@@ -153,7 +153,6 @@ class Manager:
 
                 if not cpu_name:
                     return "No CPU info found (PowerShell command failed)."
-
                 return cpu_name
 
             except Exception as e:
@@ -173,53 +172,15 @@ class Manager:
 
     def os_info(self):
         system_info = platform.uname()
-        os = platform.system()
-        release = platform.release()
 
-        if os == "Windows" and release.startswith("10"):
-            u.label("System Information:")
-            u.html(f"""
-                System: {system_info.system} <br>
-                Node name: {system_info.node} <br>
-                Release: {system_info.release} <br>
-                Version: {system_info.version} <br>
-                Machine: {system_info.machine} <br>
-            """)
-            ascii_art = """
-            """
-            u.html(f"<pre>{ascii_art}</pre>")
-
-        elif os == "Windows" and release.startswith("11"):
-            u.label("System Information:")
-            u.html(f"""
-                System: {system_info.system} <br>
-                Node name: {system_info.node} <br>
-                Release: {system_info.release} <br>
-                Version: {system_info.version} <br>
-                Machine: {system_info.machine} <br>
-            """)
-            ascii_art = """
-            ############    ############
-            ############    ############
-            ############    ############
-            ############    ############
-
-            ############    ############
-            ############    ############
-            ############    ############
-            ############    ############
-            """
-            u.html(f"<pre>{ascii_art}</pre>")
-
-        else:
-            u.label("Unsupported OS or Version")
-            u.html(f"""
-                System: {system_info.system} <br>
-                Node name: {system_info.node} <br>
-                Release: {system_info.release} <br>
-                Version: {system_info.version} <br>
-                Machine: {system_info.machine} <br>
-            """)
+        u.label("System Information:")
+        u.html(f"""
+            System: {system_info.system} <br>
+            Node name: {system_info.node} <br>
+            Release: {system_info.release} <br>
+            Version: {system_info.version} <br>
+            Machine: {system_info.machine} <br>
+        """)
 
 
 def main():
