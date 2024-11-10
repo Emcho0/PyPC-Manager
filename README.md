@@ -9,11 +9,11 @@ Ovo je jako bitno naravno za PC ili Laptop.
 
 [uv](https://github.com/astral-sh/uv) Instalira python ako nema vec u sistemu </br>
 [git](https://git-scm.com/downloads) Potreban za kloniranje projekta
+[nicegui](https://nicegui.io) Biblioteka za izradu aplikacije
 
 ### Sva uputstva za instalaciju potrebnih alata nalaze se unutar web stranica!
 
 Da biste klonirali repozitorij, koristite sljedeću komandu:
-
 
     
 ```bash
@@ -32,7 +32,7 @@ uv sync
 
 ## Pokretanje projekta 
 
-da biste pokrenuli projekat potrebno je upotrijebiti komandu 
+Pokrenite projekat jednostavno preko komande ispod:
 
 ```bash
 uv run src/main.py 
@@ -40,8 +40,10 @@ uv run src/main.py
 
 ## Pregled koda
 
-da biste usli i pregledali kod preko vs code potrebno je upotrijebiti komandu
+Da biste usli i pregledali kod preko vs code potrebno je upotrijebiti komandu
 
 ```bash
 code .
 ```
+
+###### Tema [yorumi](https://github.com/yorumicolors)
