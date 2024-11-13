@@ -17,7 +17,7 @@ Da biste klonirali repozitorij, koristite sljedeću komandu:
 
     
 ```bash
- git clone https://github.com/Emcho0/python_nicegui
+ git clone https://github.com/Emcho0/PyPC-Manager
 
 ```
 
