@@ -1,8 +1,9 @@
 import platform
 import subprocess
+
 import psutil
-from psutil import cpu_freq, disk_partitions, disk_usage, virtual_memory
 from nicegui import ui as u
+from psutil import cpu_freq, disk_partitions, disk_usage, virtual_memory
 
 
 class UI:
@@ -47,14 +48,18 @@ class UI:
         ram_text = f"RAM usage: {ram_info['used']} GB / {ram_info['total']} GB ({ram_used_percentage}%)"
         self.ram_label.text = ram_text
 
-        # Update label color based on RAM usage
         if ram_used_percentage > 80:
-            self.ram_label.classes(
-                replace="text-negative"
-            )  # Visoka upotreba RAM memorije
-            self.ram_label.classes(
-                replace="text-positive"
-            )  # Niska upotreba RAM memorije
+            self.ram_label.classes(remove="text-warning")
+            self.ram_label.classes(remove="text-positive")
+            self.ram_label.classes(add="text-negative")  # Visoka upotreba RAM memorije
+        elif 50 <= ram_used_percentage <= 80:
+            self.ram_label.classes(remove="text-positive")
+            self.ram_label.classes(remove="text-negative")
+            self.ram_label.classes(add="text-warning")  # Umjerena upotreba RAM memorije
+        else:
+            self.ram_label.classes(remove="text-warning")
+            self.ram_label.classes(remove="text-negative")
+            self.ram_label.classes(add="text-positive")  # Niska upotreba RAM memorije
 
     def disk_ui(self):
         disk_info = self.manager.show_disk_info()

@@ -4,7 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["nicegui>=2.5.0", "psutil>=6.1.0"]
+dependencies = [
+    "nicegui>=2.5.0",
+    "psutil>=6.1.0",
+]
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+]
