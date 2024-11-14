@@ -30,7 +30,7 @@ Za instalaciju i upotrebu ovog projekta potrebni su sledeći alati:
 
 Da biste klonirali repozitorij, koristite sledeću komandu:
 
-```pwsh
+```bash
 git clone https://github.com/Emcho0/PyPC-Manager
 ```
 
@@ -38,7 +38,7 @@ git clone https://github.com/Emcho0/PyPC-Manager
 
 Uđite u direktorij gdje se nalazi projekat i sinhronizujte ga
 
-```pwsh
+```bash
 cd python_nicegui
 uv sync
 ```
@@ -47,7 +47,7 @@ uv sync
 
 Pokrenite projekat jednostavno preko komande ispod:
 
-```pwsh
+```bash
 uv run src/main.py 
 ```
 
@@ -55,4 +55,4 @@ uv run src/main.py
 
 ![Uspješni testovi](images/testiranje.png)
 
-###### Tema [yorumi] je upotrijebljena za projekat (https://github.com/yorumicolors)
+###### Tema koja je upotrijebljena za projekat [yorumi](https://github.com/yorumicolors)
